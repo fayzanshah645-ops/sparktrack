@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+const path = require('path');
 const db = require('./db');
 
 const app = express();
@@ -9,6 +10,9 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the React frontend build
+app.use(express.static(path.join(__dirname, '../dist')));
 
 // --- ROUTES ---
 
@@ -96,6 +100,11 @@ app.put('/api/interns/:id/status', async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Error updating intern' });
     }
+});
+
+// AFTER all API routes, add the catch-all to serve index.html for React Router
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 
